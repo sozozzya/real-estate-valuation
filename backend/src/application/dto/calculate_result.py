@@ -28,6 +28,7 @@ class InterpretationDTO:
 class CalculateRidgeResultDTO:
     parameters: RidgeParametersDTO
     metrics: RegressionMetricsDTO
-    gamma_used: float
+    lambda_beta_used: float
+    lambda_alpha_used: float
     n_observations: int
     interpretation: InterpretationDTO

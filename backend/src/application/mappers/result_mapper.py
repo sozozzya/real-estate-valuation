@@ -31,7 +31,8 @@ class ResultMapper:
                 mae=result.metrics.mae,
                 r2=result.metrics.r2,
             ),
-            gamma_used=result.gamma,
+            lambda_beta_used=result.lambda_beta,
+            lambda_alpha_used=result.lambda_alpha,
             n_observations=result.n_observations,
             interpretation=InterpretationDTO(
                 summary=interpretation.get("house_unit_price_comment", ""),
