@@ -18,14 +18,27 @@ export interface CalculateRequest {
 export interface RegressionParameters {
   beta: number;
   alpha: number;
-  intercept: number;
 }
 
 export interface RegressionMetrics {
+  rss: number;
   mse: number;
   rmse: number;
   mae: number;
+  mape: number;
   r2: number;
+}
+
+export interface ConfidenceInterval {
+  lower: number;
+  upper: number;
+}
+
+export interface Uncertainty {
+  beta_standard_error: number;
+  alpha_standard_error: number;
+  beta_ci_95: ConfidenceInterval;
+  alpha_ci_95: ConfidenceInterval;
 }
 
 export interface Interpretation {
@@ -36,8 +49,10 @@ export interface Interpretation {
 export interface CalculateResponse {
   parameters: RegressionParameters;
   metrics: RegressionMetrics;
+  uncertainty: Uncertainty;
   lambda_beta_used: number;
   lambda_alpha_used: number;
+  prediction_formula: string;
   n_observations: number;
   interpretation: Interpretation;
 }

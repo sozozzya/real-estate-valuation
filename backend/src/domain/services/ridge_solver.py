@@ -9,7 +9,7 @@ from src.domain.models.ridge_prior import RidgePrior
 
 class RidgeSolver:
     """
-    Solves ridge regression system:
+    Solves regularized system:
 
     (XᵀX + Λ)θ = Xᵀy + Λθ₀
     """
@@ -32,7 +32,7 @@ class RidgeSolver:
 
         try:
 
-            lambda_matrix = np.diag([lambda_beta, lambda_alpha, 0.0])
+            lambda_matrix = np.diag([lambda_beta, lambda_alpha])
 
             A = X.T @ X + lambda_matrix
             b = X.T @ y + lambda_matrix @ theta0
@@ -47,5 +47,4 @@ class RidgeSolver:
         return RidgeParameters(
             beta=float(theta[0]),
             alpha=float(theta[1]),
-            intercept=float(theta[2]),
         )

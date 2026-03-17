@@ -14,9 +14,9 @@ class CalculateValidator:
         if not properties:
             raise ValidationError("property list cannot be empty")
 
-        if len(properties) < 2:
+        if len(properties) < 3:
             raise ValidationError(
-                f"at least two observations required, got {len(properties)}"
+                f"at least three observations required, got {len(properties)}"
             )
 
         for i, p in enumerate(properties):
