@@ -1,0 +1,15 @@
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #1e293b;
+  background-color: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+}

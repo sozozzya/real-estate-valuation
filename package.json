@@ -1,0 +1,28 @@
+{
+  "name": "real-estate-valuation",
+  "private": true,
+  "scripts": {
+    "setup:backend": "cd backend && python -m venv .venv && .venv\\Scripts\\pip install --upgrade pip && .venv\\Scripts\\pip install -r requirements.txt",
+    "setup:frontend": "cd frontend && npm install",
+    "setup": "npm run setup:backend && npm run setup:frontend",
+
+    "backend": "cd backend && .venv\\Scripts\\uvicorn src.presentation.main:app --reload",
+    "frontend": "cd frontend && npm run dev",
+
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+
+    "format:backend": "cd backend && .venv\\Scripts\\black src",
+    "lint:backend": "cd backend && .venv\\Scripts\\flake8 src",
+
+    "format:frontend": "cd frontend && npx prettier --write .",
+    "lint:frontend": "cd frontend && npx eslint src",
+
+    "format": "npm run format:backend && npm run format:frontend",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+
+    "clean": "powershell -Command \"Remove-Item -Recurse -Force backend\\.venv -ErrorAction SilentlyContinue; Remove-Item -Recurse -Force frontend\\node_modules -ErrorAction SilentlyContinue\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
