@@ -1,7 +1,15 @@
 # src/presentation/api/mappers.py
 
 
-from src.presentation.api.schemas import CalculateRequest, CalculateResponse, InterpretationResponse, ParametersResponse, RegressionMetricsResponse
+from src.presentation.api.schemas import (
+    CalculateRequest,
+    CalculateResponse,
+    ConfidenceIntervalResponse,
+    InterpretationResponse,
+    ParametersResponse,
+    RegressionMetricsResponse,
+    UncertaintyResponse,
+)
 from src.application.dto.calculate_input import (
     CalculateRidgeInputDTO,
     PropertyInputDTO,
@@ -24,8 +32,9 @@ class RequestMapper:
             ],
             beta_prior=request.beta_prior,
             alpha_prior=request.alpha_prior,
-            auto_gamma=request.auto_gamma,
-            gamma=request.gamma,
+            auto_lambda=request.auto_lambda,
+            lambda_beta=request.lambda_beta,
+            lambda_alpha=request.lambda_alpha,
         )
 
 
@@ -37,15 +46,30 @@ class ResponseMapper:
             parameters=ParametersResponse(
                 beta=dto.parameters.beta,
                 alpha=dto.parameters.alpha,
-                intercept=dto.parameters.intercept,
             ),
             metrics=RegressionMetricsResponse(
+                rss=dto.metrics.rss,
                 mse=dto.metrics.mse,
                 rmse=dto.metrics.rmse,
                 mae=dto.metrics.mae,
+                mape=dto.metrics.mape,
                 r2=dto.metrics.r2,
             ),
-            gamma_used=dto.gamma_used,
+            uncertainty=UncertaintyResponse(
+                beta_standard_error=dto.uncertainty.beta_standard_error,
+                alpha_standard_error=dto.uncertainty.alpha_standard_error,
+                beta_ci_95=ConfidenceIntervalResponse(
+                    lower=dto.uncertainty.beta_ci_95.lower,
+                    upper=dto.uncertainty.beta_ci_95.upper,
+                ),
+                alpha_ci_95=ConfidenceIntervalResponse(
+                    lower=dto.uncertainty.alpha_ci_95.lower,
+                    upper=dto.uncertainty.alpha_ci_95.upper,
+                ),
+            ),
+            lambda_beta_used=dto.lambda_beta_used,
+            lambda_alpha_used=dto.lambda_alpha_used,
+            prediction_formula=dto.prediction_formula,
             n_observations=dto.n_observations,
             interpretation=InterpretationResponse(
                 summary=dto.interpretation.summary,

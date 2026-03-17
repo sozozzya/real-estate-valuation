@@ -14,4 +14,4 @@ class SingularMatrixError(DomainError):
 
 
 class GammaStrategyError(DomainError):
-    """Raised when gamma cannot be computed."""
+    """Raised when regularization coefficients cannot be computed."""

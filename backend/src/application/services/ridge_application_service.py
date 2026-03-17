@@ -24,15 +24,16 @@ class RidgeApplicationService:
             "ridge_application_service_started",
             extra={
                 "n_properties": len(input_dto.properties),
-                "auto_gamma": input_dto.auto_gamma,
+                "auto_lambda": input_dto.auto_lambda,
             },
         )
 
         try:
 
             gamma_strategy = GammaStrategyFactory.create(
-                auto_gamma=input_dto.auto_gamma,
-                gamma=input_dto.gamma,
+                auto_lambda=input_dto.auto_lambda,
+                lambda_beta=input_dto.lambda_beta,
+                lambda_alpha=input_dto.lambda_alpha,
             )
 
             data, prior = InputMapper.to_domain(input_dto)
@@ -51,7 +52,8 @@ class RidgeApplicationService:
             logger.info(
                 "ridge_application_service_completed",
                 extra={
-                    "gamma_used": output.gamma_used,
+                    "lambda_beta_used": output.lambda_beta_used,
+                    "lambda_alpha_used": output.lambda_alpha_used,
                     "n_observations": output.n_observations,
                 },
             )
