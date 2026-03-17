@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function ResultsPanel({ result }: Props) {
-  const { parameters, metrics, gamma_used } = result;
+  const { parameters, metrics, lambda_beta_used, lambda_alpha_used } = result;
 
   return (
     <div className="result-card">
@@ -22,7 +22,8 @@ export default function ResultsPanel({ result }: Props) {
         <MetricsCard label="R²" value={metrics.r2} />
         <MetricsCard label="RMSE" value={metrics.rmse} />
         <MetricsCard label="MAE" value={metrics.mae} />
-        <MetricsCard label="γ" value={gamma_used} />
+        <MetricsCard label="λβ" value={lambda_beta_used} />
+        <MetricsCard label="λα" value={lambda_alpha_used} />
       </div>
     </div>
   );

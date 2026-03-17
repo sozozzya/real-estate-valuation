@@ -28,7 +28,8 @@ class ExcelReportGenerator(ReportGeneratorPort):
                         "RMSE",
                         "MAE",
                         "R2",
-                        "Gamma",
+                        "Lambda Beta",
+                        "Lambda Alpha",
                     ],
                     "Value": [
                         result.parameters.beta,
@@ -38,7 +39,8 @@ class ExcelReportGenerator(ReportGeneratorPort):
                         result.metrics.rmse,
                         result.metrics.mae,
                         result.metrics.r2,
-                        result.gamma_used,
+                        result.lambda_beta_used,
+                        result.lambda_alpha_used,
                     ],
                 }
             )

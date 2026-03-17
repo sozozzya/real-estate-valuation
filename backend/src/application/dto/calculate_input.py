@@ -19,6 +19,7 @@ class CalculateRidgeInputDTO:
     beta_prior: Optional[float] = None
     alpha_prior: Optional[float] = None
 
-    # gamma logic
-    auto_gamma: bool = True
-    gamma: Optional[float] = None
+    # regularization logic
+    auto_lambda: bool = True
+    lambda_beta: Optional[float] = None
+    lambda_alpha: Optional[float] = None

@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function InterpretationPanel({ result }: Props) {
-  const { parameters, gamma_used, interpretation } = result;
+  const { parameters, lambda_beta_used, lambda_alpha_used, interpretation } = result;
 
   return (
     <div className="bg-white p-4 rounded shadow mt-6">
@@ -22,8 +22,8 @@ export default function InterpretationPanel({ result }: Props) {
       </p>
 
       <p>
-        Использованный коэффициент регуляризации γ ={" "}
-        <b>{gamma_used.toFixed(2)}</b>
+        Использованные коэффициенты регуляризации λβ и λα ={" "}
+        <b>{lambda_beta_used.toFixed(2)} / {lambda_alpha_used.toFixed(2)}</b>
       </p>
 
       <p className="mt-2">

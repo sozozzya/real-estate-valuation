@@ -40,15 +40,22 @@ class RidgeEstimator:
 
         X, y = self._matrix_builder.build(data)
 
-        gamma = self._gamma_strategy.compute(X, y)
+        lambda_beta, lambda_alpha = self._gamma_strategy.compute(X, y)
 
-        params = self._solver.solve(X, y, prior, gamma)
+        params = self._solver.solve(
+            X,
+            y,
+            prior,
+            lambda_beta=lambda_beta,
+            lambda_alpha=lambda_alpha,
+        )
 
         metrics = self._metrics_calculator.calculate(X, y, params)
 
         return RegressionResult(
             parameters=params,
             metrics=metrics,
-            gamma=gamma,
+            lambda_beta=lambda_beta,
+            lambda_alpha=lambda_alpha,
             n_observations=data.size,
         )

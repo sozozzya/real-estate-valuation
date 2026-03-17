@@ -11,7 +11,7 @@ class RidgeSolver:
     """
     Solves ridge regression system:
 
-    (XᵀX + γI)θ = Xᵀy + γθ₀
+    (XᵀX + Λ)θ = Xᵀy + Λθ₀
     """
 
     def solve(
@@ -19,7 +19,8 @@ class RidgeSolver:
         X: np.ndarray,
         y: np.ndarray,
         prior: RidgePrior,
-        gamma: float,
+        lambda_beta: float,
+        lambda_alpha: float,
     ) -> RidgeParameters:
 
         theta0 = prior.as_vector()
@@ -31,11 +32,10 @@ class RidgeSolver:
 
         try:
 
-            identity = np.eye(X.shape[1])
-            identity[-1, -1] = 0.0  # intercept not regularized
+            lambda_matrix = np.diag([lambda_beta, lambda_alpha, 0.0])
 
-            A = X.T @ X + gamma * identity
-            b = X.T @ y + gamma * theta0
+            A = X.T @ X + lambda_matrix
+            b = X.T @ y + lambda_matrix @ theta0
 
             theta = np.linalg.solve(A, b)
 

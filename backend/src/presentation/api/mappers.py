@@ -24,8 +24,9 @@ class RequestMapper:
             ],
             beta_prior=request.beta_prior,
             alpha_prior=request.alpha_prior,
-            auto_gamma=request.auto_gamma,
-            gamma=request.gamma,
+            auto_lambda=request.auto_lambda,
+            lambda_beta=request.lambda_beta,
+            lambda_alpha=request.lambda_alpha,
         )
 
 
@@ -45,7 +46,8 @@ class ResponseMapper:
                 mae=dto.metrics.mae,
                 r2=dto.metrics.r2,
             ),
-            gamma_used=dto.gamma_used,
+            lambda_beta_used=dto.lambda_beta_used,
+            lambda_alpha_used=dto.lambda_alpha_used,
             n_observations=dto.n_observations,
             interpretation=InterpretationResponse(
                 summary=dto.interpretation.summary,

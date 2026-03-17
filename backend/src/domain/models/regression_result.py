@@ -10,5 +10,6 @@ from src.domain.services.metrics import RegressionMetrics
 class RegressionResult:
     parameters: RidgeParameters
     metrics: RegressionMetrics
-    gamma: float
+    lambda_beta: float
+    lambda_alpha: float
     n_observations: int

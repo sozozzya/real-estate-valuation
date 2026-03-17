@@ -10,8 +10,9 @@ export interface CalculateRequest {
   properties: Property[];
   beta_prior?: number;
   alpha_prior?: number;
-  gamma?: number;
-  auto_gamma?: boolean;
+  lambda_beta?: number;
+  lambda_alpha?: number;
+  auto_lambda?: boolean;
 }
 
 export interface RegressionParameters {
@@ -35,7 +36,8 @@ export interface Interpretation {
 export interface CalculateResponse {
   parameters: RegressionParameters;
   metrics: RegressionMetrics;
-  gamma_used: number;
+  lambda_beta_used: number;
+  lambda_alpha_used: number;
   n_observations: number;
   interpretation: Interpretation;
 }
