@@ -36,6 +36,7 @@ class VarianceBasedGammaStrategy(GammaStrategy):
             raise GammaStrategyError("scale must be positive.")
         self._scale = scale
 
+<<<<<<< HEAD
     def _fit_theta(
         self,
         X: np.ndarray,
@@ -83,5 +84,17 @@ class VarianceBasedGammaStrategy(GammaStrategy):
                     best = (float(lambda_beta), float(lambda_alpha))
 
             return best
+=======
+    def compute(self, X: np.ndarray, y: np.ndarray) -> tuple[float, float]:
+        try:
+            variance_y = np.var(y)
+            variance_s = np.var(X[:, 0])
+            variance_q = np.var(X[:, 1])
+
+            lambda_beta = self._scale * variance_y / max(variance_s, 1e-8)
+            lambda_alpha = self._scale * variance_y / max(variance_q, 1e-8)
+
+            return float(lambda_beta), float(lambda_alpha)
+>>>>>>> main
         except Exception as e:
             raise GammaStrategyError("failed to compute lambdas") from e

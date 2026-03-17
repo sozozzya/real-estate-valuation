@@ -43,9 +43,14 @@ class InterpretationDTO:
 class CalculateRidgeResultDTO:
     parameters: RidgeParametersDTO
     metrics: RegressionMetricsDTO
+<<<<<<< HEAD
     uncertainty: UncertaintyDTO
     lambda_beta_used: float
     lambda_alpha_used: float
     prediction_formula: str
+=======
+    lambda_beta_used: float
+    lambda_alpha_used: float
+>>>>>>> main
     n_observations: int
     interpretation: InterpretationDTO

@@ -8,7 +8,13 @@ interface Props {
 }
 
 export default function ResultsPanel({ result }: Props) {
-  const { parameters, metrics, uncertainty, lambda_beta_used, lambda_alpha_used } = result;
+  const {
+    parameters,
+    metrics,
+    uncertainty,
+    lambda_beta_used,
+    lambda_alpha_used,
+  } = result;
 
   return (
     <div className="result-card">

@@ -55,6 +55,7 @@ class ResponseMapper:
                 mape=dto.metrics.mape,
                 r2=dto.metrics.r2,
             ),
+<<<<<<< HEAD
             uncertainty=UncertaintyResponse(
                 beta_standard_error=dto.uncertainty.beta_standard_error,
                 alpha_standard_error=dto.uncertainty.alpha_standard_error,
@@ -70,6 +71,10 @@ class ResponseMapper:
             lambda_beta_used=dto.lambda_beta_used,
             lambda_alpha_used=dto.lambda_alpha_used,
             prediction_formula=dto.prediction_formula,
+=======
+            lambda_beta_used=dto.lambda_beta_used,
+            lambda_alpha_used=dto.lambda_alpha_used,
+>>>>>>> main
             n_observations=dto.n_observations,
             interpretation=InterpretationResponse(
                 summary=dto.interpretation.summary,
