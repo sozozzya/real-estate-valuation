@@ -65,14 +65,9 @@ class RidgeEstimator:
         return RegressionResult(
             parameters=params,
             metrics=metrics,
-<<<<<<< HEAD
             uncertainty=uncertainty,
             lambda_beta=lambda_beta,
             lambda_alpha=lambda_alpha,
             prediction_formula=f"V = {params.beta:.4f} * S + {params.alpha:.4f} * Q",
-=======
-            lambda_beta=lambda_beta,
-            lambda_alpha=lambda_alpha,
->>>>>>> main
             n_observations=data.size,
         )
