@@ -73,8 +73,7 @@ class VarianceBasedGammaStrategy(GammaStrategy):
                     mask[i] = False
                     x_train = X[mask]
                     y_train = y[mask]
-                    theta = self._fit_theta(
-                        x_train, y_train, lambda_beta, lambda_alpha)
+                    theta = self._fit_theta(x_train, y_train, lambda_beta, lambda_alpha)
                     y_hat = float(X[i] @ theta)
                     sq_errors.append((float(y[i]) - y_hat) ** 2)
 

@@ -35,7 +35,8 @@ class UncertaintyDTO:
 
 @dataclass(frozen=True)
 class InterpretationDTO:
-    summary: str
+    behavior: str
+    market_change: str
     quality: str
 
 

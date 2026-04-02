@@ -42,7 +42,8 @@ export interface Uncertainty {
 }
 
 export interface Interpretation {
-  summary: string;
+  behavior: string;
+  market_change: string;
   quality: string;
 }
 

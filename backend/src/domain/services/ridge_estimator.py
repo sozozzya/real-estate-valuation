@@ -68,6 +68,8 @@ class RidgeEstimator:
             uncertainty=uncertainty,
             lambda_beta=lambda_beta,
             lambda_alpha=lambda_alpha,
+            beta_prior=prior.beta_prior,
+            alpha_prior=prior.alpha_prior,
             prediction_formula=f"V = {params.beta:.4f} * S + {params.alpha:.4f} * Q",
             n_observations=data.size,
         )

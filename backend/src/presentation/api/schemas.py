@@ -23,8 +23,7 @@ class CalculateRequest(BaseModel):
     @model_validator(mode="after")
     def validate_lambda(self):
         if not self.auto_lambda and (self.lambda_beta is None or self.lambda_alpha is None):
-            raise ValueError(
-                "lambda_beta and lambda_alpha must be provided if auto_lambda is False")
+            raise ValueError("lambda_beta and lambda_alpha must be provided if auto_lambda is False")
         return self
 
     @model_validator(mode="after")
@@ -61,7 +60,8 @@ class UncertaintyResponse(BaseModel):
 
 
 class InterpretationResponse(BaseModel):
-    summary: str
+    behavior: str
+    market_change: str
     quality: str
 
 

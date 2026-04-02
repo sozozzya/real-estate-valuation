@@ -51,7 +51,8 @@ class ResultMapper:
             prediction_formula=result.prediction_formula,
             n_observations=result.n_observations,
             interpretation=InterpretationDTO(
-                summary=interpretation.get("summary", ""),
-                quality=interpretation.get("model_quality", ""),
+                behavior=interpretation.get("behavior", ""),
+                market_change=interpretation.get("market_change", ""),
+                quality=interpretation.get("quality", ""),
             ),
         )

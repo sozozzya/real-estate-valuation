@@ -72,7 +72,8 @@ class ResponseMapper:
             prediction_formula=dto.prediction_formula,
             n_observations=dto.n_observations,
             interpretation=InterpretationResponse(
-                summary=dto.interpretation.summary,
+                behavior=dto.interpretation.behavior,
+                market_change=dto.interpretation.market_change,
                 quality=dto.interpretation.quality,
             ),
         )
