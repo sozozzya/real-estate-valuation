@@ -1,5 +1,6 @@
 // src/components/InterpretationPanel.tsx
 
+import { useMemo, useState } from "react";
 import type { CalculateResponse } from "../types/apiTypes";
 
 interface Props {

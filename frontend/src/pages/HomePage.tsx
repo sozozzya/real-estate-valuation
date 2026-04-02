@@ -11,6 +11,7 @@ import ReliabilityPanel from "../components/ReliabilityPanel";
 import QualityPanel from "../components/QualityPanel";
 import AnalysisPanel from "../components/AnalysisPanel";
 import InterpretationPanel from "../components/InterpretationPanel";
+import AnalysisPanel from "../components/AnalysisPanel";
 import { useRidgeCalculation } from "../hooks/useRidgeCalculation";
 import type { Property, CalculateResponse } from "../types/apiTypes";
 
