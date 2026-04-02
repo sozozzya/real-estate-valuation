@@ -10,11 +10,10 @@ class RidgeParameters:
 
     beta: float
     alpha: float
-    intercept: float
 
     def as_vector(self) -> np.ndarray:
 
         return np.array(
-            [self.beta, self.alpha, self.intercept],
+            [self.beta, self.alpha],
             dtype=float
         )
