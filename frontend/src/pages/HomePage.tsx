@@ -7,6 +7,9 @@ import ManualTableInput from "../components/ManualTableInput";
 import PriorInput from "../components/PriorInput";
 import GammaSelector from "../components/GammaSelector";
 import ResultsPanel from "../components/ResultsPanel";
+import ReliabilityPanel from "../components/ReliabilityPanel";
+import QualityPanel from "../components/QualityPanel";
+import AnalysisPanel from "../components/AnalysisPanel";
 import InterpretationPanel from "../components/InterpretationPanel";
 import AnalysisPanel from "../components/AnalysisPanel";
 import { useRidgeCalculation } from "../hooks/useRidgeCalculation";
@@ -22,6 +25,7 @@ export default function HomePage() {
   const [lambdaAlpha, setLambdaAlpha] = useState<number | undefined>();
   const [result, setResult] = useState<CalculateResponse | null>(null);
   const [calculatedProperties, setCalculatedProperties] = useState<Property[]>([]);
+  const [usedAutoLambda, setUsedAutoLambda] = useState(true);
 
   const { execute, loading, error } = useRidgeCalculation();
 
@@ -50,6 +54,7 @@ export default function HomePage() {
     if (res) {
       setResult(res);
       setCalculatedProperties(cleaned);
+      setUsedAutoLambda(autoLambda);
     }
   };
 
@@ -94,8 +99,10 @@ export default function HomePage() {
       {result && (
         <>
           <ResultsPanel result={result} />
-          <InterpretationPanel result={result} />
+          <ReliabilityPanel result={result} />
+          <QualityPanel result={result} />
           <AnalysisPanel properties={calculatedProperties} parameters={result.parameters} />
+          <InterpretationPanel result={result} showCalculatedLambdas={usedAutoLambda} />
         </>
       )}
     </div>

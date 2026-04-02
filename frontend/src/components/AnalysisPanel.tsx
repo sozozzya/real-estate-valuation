@@ -58,10 +58,9 @@ const fitLine = (xs: number[], ys: number[]) => {
 };
 
 export default function AnalysisPanel({ properties, parameters }: Props) {
-  const points = properties.map((p, index) => {
+  const points = properties.map((p) => {
     const predicted = predict(p, parameters);
     return {
-      index: index + 1,
       actual: p.price,
       predicted,
       residual: p.price - predicted,
@@ -79,14 +78,8 @@ export default function AnalysisPanel({ properties, parameters }: Props) {
 
   const residualHist = buildHistogram(points.map((p) => p.residual));
 
-  const houseFit = fitLine(
-    points.map((p) => p.house_area),
-    points.map((p) => p.actual),
-  );
-  const landFit = fitLine(
-    points.map((p) => p.land_area),
-    points.map((p) => p.actual),
-  );
+  const houseFit = fitLine(points.map((p) => p.house_area), points.map((p) => p.actual));
+  const landFit = fitLine(points.map((p) => p.land_area), points.map((p) => p.actual));
 
   const houseMin = Math.min(...points.map((p) => p.house_area));
   const houseMax = Math.max(...points.map((p) => p.house_area));
@@ -101,32 +94,34 @@ export default function AnalysisPanel({ properties, parameters }: Props) {
       <ResponsiveContainer width="100%" height={320}>
         <ComposedChart data={points}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="actual" name="Фактическая цена" unit=" руб." domain={["auto", "auto"]} />
-          <YAxis type="number" dataKey="predicted" name="Расчётная цена" unit=" руб." domain={["auto", "auto"]} />
+          <XAxis type="number" dataKey="actual" unit=" руб." label={{ value: "Фактическая цена, руб.", position: "insideBottom", offset: -5 }} />
+          <YAxis type="number" dataKey="predicted" unit=" руб." label={{ value: "Расчётная цена, руб.", angle: -90, position: "insideLeft" }} />
           <Tooltip formatter={(v: number) => `${moneyFmt.format(Math.round(v))} руб.`} />
           <Scatter data={points} fill="#2563eb" />
           <Line data={diag} dataKey="y" type="linear" dot={false} stroke="#ef4444" strokeDasharray="5 5" />
         </ComposedChart>
       </ResponsiveContainer>
+      <p>Точки близко к диагонали — модель лучше согласуется с реальными сделками.</p>
 
       <h3 style={{ marginTop: 16 }}>Остатки</h3>
       <ResponsiveContainer width="100%" height={300}>
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="predicted" name="Расчётная цена" unit=" руб." />
-          <YAxis type="number" dataKey="residual" name="Ошибка" unit=" руб." />
+          <XAxis type="number" dataKey="predicted" unit=" руб." label={{ value: "Расчётная цена, руб.", position: "insideBottom", offset: -5 }} />
+          <YAxis type="number" dataKey="residual" unit=" руб." label={{ value: "Ошибка (остаток), руб.", angle: -90, position: "insideLeft" }} />
           <Tooltip formatter={(v: number) => `${moneyFmt.format(Math.round(v))} руб.`} />
           <ReferenceLine y={0} stroke="#ef4444" strokeDasharray="4 4" />
           <Scatter data={points} fill="#16a34a" />
         </ScatterChart>
       </ResponsiveContainer>
+      <p>Равномерное распределение точек вокруг нуля указывает на отсутствие систематического смещения.</p>
 
       <h3 style={{ marginTop: 16 }}>Гистограмма остатков (опционально)</h3>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={residualHist}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="range" interval={0} angle={-20} textAnchor="end" height={70} />
-          <YAxis />
+          <XAxis dataKey="range" interval={0} angle={-20} textAnchor="end" height={70} label={{ value: "Ошибка, руб.", position: "insideBottom", offset: -5 }} />
+          <YAxis label={{ value: "Частота", angle: -90, position: "insideLeft" }} />
           <Tooltip />
           <Bar dataKey="count" fill="#0ea5e9" />
         </BarChart>
@@ -136,19 +131,11 @@ export default function AnalysisPanel({ properties, parameters }: Props) {
       <ResponsiveContainer width="100%" height={280}>
         <ComposedChart data={points}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="house_area" unit=" м²" />
-          <YAxis type="number" dataKey="actual" unit=" руб." />
+          <XAxis type="number" dataKey="house_area" unit=" м²" label={{ value: "Площадь дома S, м²", position: "insideBottom", offset: -5 }} />
+          <YAxis type="number" dataKey="actual" unit=" руб." label={{ value: "Цена, руб.", angle: -90, position: "insideLeft" }} />
           <Tooltip formatter={(v: number) => `${moneyFmt.format(Math.round(v))} руб.`} />
           <Scatter data={points} fill="#6366f1" />
-          <Line
-            data={[
-              { house_area: houseMin, actual: houseFit.slope * houseMin + houseFit.intercept },
-              { house_area: houseMax, actual: houseFit.slope * houseMax + houseFit.intercept },
-            ]}
-            dataKey="actual"
-            dot={false}
-            stroke="#ef4444"
-          />
+          <Line data={[{ house_area: houseMin, actual: houseFit.slope * houseMin + houseFit.intercept }, { house_area: houseMax, actual: houseFit.slope * houseMax + houseFit.intercept }]} dataKey="actual" dot={false} stroke="#ef4444" />
         </ComposedChart>
       </ResponsiveContainer>
 
@@ -156,45 +143,13 @@ export default function AnalysisPanel({ properties, parameters }: Props) {
       <ResponsiveContainer width="100%" height={280}>
         <ComposedChart data={points}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="land_area" unit=" м²" />
-          <YAxis type="number" dataKey="actual" unit=" руб." />
+          <XAxis type="number" dataKey="land_area" unit=" м²" label={{ value: "Площадь участка Q, м²", position: "insideBottom", offset: -5 }} />
+          <YAxis type="number" dataKey="actual" unit=" руб." label={{ value: "Цена, руб.", angle: -90, position: "insideLeft" }} />
           <Tooltip formatter={(v: number) => `${moneyFmt.format(Math.round(v))} руб.`} />
           <Scatter data={points} fill="#f59e0b" />
-          <Line
-            data={[
-              { land_area: landMin, actual: landFit.slope * landMin + landFit.intercept },
-              { land_area: landMax, actual: landFit.slope * landMax + landFit.intercept },
-            ]}
-            dataKey="actual"
-            dot={false}
-            stroke="#ef4444"
-          />
+          <Line data={[{ land_area: landMin, actual: landFit.slope * landMin + landFit.intercept }, { land_area: landMax, actual: landFit.slope * landMax + landFit.intercept }]} dataKey="actual" dot={false} stroke="#ef4444" />
         </ComposedChart>
       </ResponsiveContainer>
-
-      <h3 style={{ marginTop: 16 }}>Таблица фактических и расчётных значений</h3>
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Факт, руб.</th>
-              <th>Прогноз, руб.</th>
-              <th>Ошибка, руб.</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((p) => (
-              <tr key={p.index}>
-                <td>{p.index}</td>
-                <td>{moneyFmt.format(Math.round(p.actual))}</td>
-                <td>{moneyFmt.format(Math.round(p.predicted))}</td>
-                <td>{moneyFmt.format(Math.round(p.residual))}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }
