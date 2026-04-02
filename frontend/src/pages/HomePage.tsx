@@ -8,6 +8,7 @@ import PriorInput from "../components/PriorInput";
 import GammaSelector from "../components/GammaSelector";
 import ResultsPanel from "../components/ResultsPanel";
 import InterpretationPanel from "../components/InterpretationPanel";
+import AnalysisPanel from "../components/AnalysisPanel";
 import { useRidgeCalculation } from "../hooks/useRidgeCalculation";
 import type { Property, CalculateResponse } from "../types/apiTypes";
 
@@ -16,9 +17,11 @@ export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [betaPrior, setBetaPrior] = useState<number | undefined>();
   const [alphaPrior, setAlphaPrior] = useState<number | undefined>();
-  const [autoGamma, setAutoGamma] = useState(true);
-  const [gamma, setGamma] = useState<number | undefined>();
+  const [autoLambda, setAutoLambda] = useState(true);
+  const [lambdaBeta, setLambdaBeta] = useState<number | undefined>();
+  const [lambdaAlpha, setLambdaAlpha] = useState<number | undefined>();
   const [result, setResult] = useState<CalculateResponse | null>(null);
+  const [calculatedProperties, setCalculatedProperties] = useState<Property[]>([]);
 
   const { execute, loading, error } = useRidgeCalculation();
 
@@ -39,11 +42,15 @@ export default function HomePage() {
       properties: cleaned,
       beta_prior: betaPrior ?? 0,
       alpha_prior: alphaPrior ?? 0,
-      gamma: autoGamma ? 0 : (gamma ?? 0),
-      auto_gamma: autoGamma,
+      lambda_beta: autoLambda ? 0 : (lambdaBeta ?? 0),
+      lambda_alpha: autoLambda ? 0 : (lambdaAlpha ?? 0),
+      auto_lambda: autoLambda,
     });
 
-    if (res) setResult(res);
+    if (res) {
+      setResult(res);
+      setCalculatedProperties(cleaned);
+    }
   };
 
   return (
@@ -68,11 +75,13 @@ export default function HomePage() {
       />
 
       <GammaSelector
-        auto={autoGamma}
-        gamma={gamma}
-        onChange={(a, g) => {
-          setAutoGamma(a);
-          setGamma(g);
+        auto={autoLambda}
+        lambdaBeta={lambdaBeta}
+        lambdaAlpha={lambdaAlpha}
+        onChange={(a, lb, la) => {
+          setAutoLambda(a);
+          setLambdaBeta(lb);
+          setLambdaAlpha(la);
         }}
       />
 
@@ -86,6 +95,7 @@ export default function HomePage() {
         <>
           <ResultsPanel result={result} />
           <InterpretationPanel result={result} />
+          <AnalysisPanel properties={calculatedProperties} parameters={result.parameters} />
         </>
       )}
     </div>
