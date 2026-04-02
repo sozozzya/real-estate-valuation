@@ -14,9 +14,9 @@ class CalculateValidator:
         if not properties:
             raise ValidationError("property list cannot be empty")
 
-        if len(properties) < 2:
+        if len(properties) < 3:
             raise ValidationError(
-                f"at least two observations required, got {len(properties)}"
+                f"at least three observations required, got {len(properties)}"
             )
 
         for i, p in enumerate(properties):
@@ -36,14 +36,19 @@ class CalculateValidator:
                     f"land_area must be positive at index {i}"
                 )
 
-        if not dto.auto_gamma:
+        if not dto.auto_lambda:
 
-            if dto.gamma is None:
+            if dto.lambda_beta is None or dto.lambda_alpha is None:
                 raise ValidationError(
-                    "gamma must be provided when auto_gamma is False"
+                    "lambda_beta and lambda_alpha must be provided when auto_lambda is False"
                 )
 
-            if dto.gamma < 0:
+            if dto.lambda_beta < 0:
                 raise ValidationError(
-                    f"gamma must be non-negative, got {dto.gamma}"
+                    f"lambda_beta must be non-negative, got {dto.lambda_beta}"
+                )
+
+            if dto.lambda_alpha < 0:
+                raise ValidationError(
+                    f"lambda_alpha must be non-negative, got {dto.lambda_alpha}"
                 )
