@@ -8,6 +8,7 @@ import PriorInput from "../components/PriorInput";
 import GammaSelector from "../components/GammaSelector";
 import ResultsPanel from "../components/ResultsPanel";
 import InterpretationPanel from "../components/InterpretationPanel";
+import AnalysisPanel from "../components/AnalysisPanel";
 import { useRidgeCalculation } from "../hooks/useRidgeCalculation";
 import type { Property, CalculateResponse } from "../types/apiTypes";
 
@@ -20,6 +21,7 @@ export default function HomePage() {
   const [lambdaBeta, setLambdaBeta] = useState<number | undefined>();
   const [lambdaAlpha, setLambdaAlpha] = useState<number | undefined>();
   const [result, setResult] = useState<CalculateResponse | null>(null);
+  const [calculatedProperties, setCalculatedProperties] = useState<Property[]>([]);
 
   const { execute, loading, error } = useRidgeCalculation();
 
@@ -45,7 +47,10 @@ export default function HomePage() {
       auto_lambda: autoLambda,
     });
 
-    if (res) setResult(res);
+    if (res) {
+      setResult(res);
+      setCalculatedProperties(cleaned);
+    }
   };
 
   return (
@@ -90,6 +95,7 @@ export default function HomePage() {
         <>
           <ResultsPanel result={result} />
           <InterpretationPanel result={result} />
+          <AnalysisPanel properties={calculatedProperties} parameters={result.parameters} />
         </>
       )}
     </div>

@@ -24,10 +24,10 @@ export default function ResultsPanel({ result }: Props) {
       <h2 className="result-title">🧾 Результаты оценки</h2>
 
       <p>
-        Удельная стоимость дома: <b>{formatUnitPrice(parameters.beta)} €/м²</b>
+        Удельная стоимость дома: <b>{formatUnitPrice(parameters.beta)} руб./м²</b>
       </p>
       <p>
-        Удельная стоимость участка: <b>{formatUnitPrice(parameters.alpha)} €/м²</b>
+        Удельная стоимость участка: <b>{formatUnitPrice(parameters.alpha)} руб./м²</b>
       </p>
 
       <p style={{ marginTop: 12 }}>
@@ -39,7 +39,7 @@ export default function ResultsPanel({ result }: Props) {
         R²: <b>{metrics.r2.toFixed(2)}</b>
       </p>
       <p>
-        Средняя ошибка (RMSE): <b>{intFmt.format(Math.round(metrics.rmse))} €</b>
+        Средняя ошибка (RMSE): <b>{intFmt.format(Math.round(metrics.rmse))} руб.</b>
       </p>
       <p>
         Средняя ошибка (MAPE): <b>{pctFmt.format(metrics.mape)}%</b>

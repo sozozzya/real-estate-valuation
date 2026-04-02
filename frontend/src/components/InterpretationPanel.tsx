@@ -9,6 +9,12 @@ interface Props {
 
 const intFmt = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
 
+const influenceLabel = (lambdaValue: number): string => {
+  if (lambdaValue < 1) return "слабое";
+  if (lambdaValue < 50) return "умеренное";
+  return "высокое";
+};
+
 export default function InterpretationPanel({ result }: Props) {
   const { parameters, lambda_beta_used, lambda_alpha_used, uncertainty, interpretation } = result;
 
@@ -26,10 +32,10 @@ export default function InterpretationPanel({ result }: Props) {
       <h3 className="font-semibold mb-2">📊 Надёжность оценок</h3>
 
       <p>
-        95% доверительный интервал для дома: <b>{intFmt.format(Math.round(uncertainty.beta_ci_95.lower))} – {intFmt.format(Math.round(uncertainty.beta_ci_95.upper))} €/м²</b>
+        95% доверительный интервал для дома: <b>{intFmt.format(Math.round(uncertainty.beta_ci_95.lower))} – {intFmt.format(Math.round(uncertainty.beta_ci_95.upper))} руб./м²</b>
       </p>
       <p>
-        95% доверительный интервал для участка: <b>{intFmt.format(Math.round(uncertainty.alpha_ci_95.lower))} – {intFmt.format(Math.round(uncertainty.alpha_ci_95.upper))} €/м²</b>
+        95% доверительный интервал для участка: <b>{intFmt.format(Math.round(uncertainty.alpha_ci_95.lower))} – {intFmt.format(Math.round(uncertainty.alpha_ci_95.upper))} руб./м²</b>
       </p>
 
       <h3 className="font-semibold mt-4 mb-2">🏷 Оценка конкретного объекта</h3>
@@ -51,14 +57,16 @@ export default function InterpretationPanel({ result }: Props) {
       </div>
       {estimatedPrice !== undefined && (
         <p style={{ marginTop: 8 }}>
-          Оценка стоимости объекта: <b>{intFmt.format(Math.round(estimatedPrice))} €</b>
+          Оценка стоимости объекта: <b>{intFmt.format(Math.round(estimatedPrice))} руб.</b>
         </p>
       )}
 
       <h3 className="font-semibold mt-4 mb-2">🧠 Интерпретация</h3>
       <p>{interpretation.behavior}</p>
       <p>{interpretation.market_change}</p>
-      <p><b>{interpretation.quality}</b></p>
+      <p>{interpretation.quality}</p>
+      <p>Использована регуляризация с учетом данных предыдущего периода.</p>
+      <p>Влияние априорных данных: дом — <b>{influenceLabel(lambda_beta_used)}</b>, участок — <b>{influenceLabel(lambda_alpha_used)}</b>.</p>
 
       <label style={{ display: "block", marginTop: 12 }}>
         <input type="checkbox" checked={advanced} onChange={(e) => setAdvanced(e.target.checked)} />{" "}
@@ -69,8 +77,6 @@ export default function InterpretationPanel({ result }: Props) {
         <div style={{ marginTop: 8 }}>
           <p>SE(β): {uncertainty.beta_standard_error.toFixed(2)}</p>
           <p>SE(α): {uncertainty.alpha_standard_error.toFixed(2)}</p>
-          <p>Сила регуляризации (дом): {lambda_beta_used.toFixed(2)}</p>
-          <p>Сила регуляризации (участок): {lambda_alpha_used.toFixed(2)}</p>
         </div>
       )}
     </div>
