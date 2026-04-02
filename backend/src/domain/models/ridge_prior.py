@@ -11,7 +11,6 @@ class RidgePrior:
 
     beta_prior: Optional[float]
     alpha_prior: Optional[float]
-    intercept_prior: float = 0.0
 
     def as_vector(self) -> np.ndarray:
 
@@ -19,6 +18,6 @@ class RidgePrior:
         alpha = 0.0 if self.alpha_prior is None else self.alpha_prior
 
         return np.array(
-            [beta, alpha, self.intercept_prior],
+            [beta, alpha],
             dtype=float
         )
