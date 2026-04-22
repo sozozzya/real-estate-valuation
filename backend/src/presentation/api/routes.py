@@ -44,7 +44,7 @@ async def calculate(
             extra={
                 "lambda_star": response.lambda_star,
                 "n_observations": response.n_observations,
-                "test_mse": response.metrics.mse,
+                "rmse_loocv": response.metrics.rmse_loocv,
             },
         )
 

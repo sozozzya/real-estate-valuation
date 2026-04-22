@@ -28,7 +28,8 @@ export default function ResultsPanel({ result }: Props) {
 
   return (
     <div className="result-card">
-      <h2 className="result-title">🧾 Итог оценки</h2>
+      <h2 className="result-title">🧾 Результат модели</h2>
+      <p>Модель оценки (регуляризованная регрессия с учётом предыдущего периода)</p>
 
       <p>
         Удельная стоимость дома: <b>{formatUnitPrice(parameters.beta)} руб./м²</b>

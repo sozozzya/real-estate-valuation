@@ -1,5 +1,4 @@
 import logging
-from dataclasses import asdict
 
 import numpy as np
 
@@ -7,10 +6,10 @@ from src.application.dto.calculate_result import (
     CalculateRidgeResultDTO,
     ConfidenceIntervalDTO,
     CvPointDTO,
+    DiagnosticsDTO,
     InterpretationDTO,
     RegressionMetricsDTO,
     RidgeParametersDTO,
-    SplitInfoDTO,
     UncertaintyDTO,
 )
 from src.domain.exceptions import DomainError
@@ -23,126 +22,125 @@ class RidgeApplicationService:
     _DEFAULT_GRID = [1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0]
 
     @staticmethod
-    def _train_test_split(X: np.ndarray, y: np.ndarray, test_ratio: float = 0.2):
-        n = X.shape[0]
-        test_size = max(1, int(round(n * test_ratio)))
-        rng = np.random.default_rng(42)
-        idx = np.arange(n)
-        rng.shuffle(idx)
-        test_idx = idx[:test_size]
-        train_idx = idx[test_size:]
-        return X[train_idx], y[train_idx], X[test_idx], y[test_idx]
+    def _fit_theta(X: np.ndarray, y: np.ndarray, prior: np.ndarray, lam: float) -> np.ndarray:
+        return np.linalg.solve(X.T @ X + lam * np.eye(X.shape[1]), X.T @ y + lam * prior)
 
     @staticmethod
-    def _fit_theta(X: np.ndarray, y: np.ndarray, prior: np.ndarray, lam: float):
-        A = X.T @ X + lam * np.eye(X.shape[1])
-        b = X.T @ y + lam * prior
-        return np.linalg.solve(A, b)
+    def _scale_by_std(X: np.ndarray):
+        std = np.std(X, axis=0)
+        std = np.where(std < 1e-8, 1.0, std)
+        return X / std, std
 
-    def _loocv_error(self, X: np.ndarray, y: np.ndarray, prior: np.ndarray, lam: float) -> float:
+    def _loocv_predictions(self, X: np.ndarray, y: np.ndarray, prior: np.ndarray, lam: float) -> np.ndarray:
         n = X.shape[0]
-        errors = []
+        preds = np.zeros(n, dtype=float)
         for i in range(n):
             mask = np.ones(n, dtype=bool)
             mask[i] = False
             theta = self._fit_theta(X[mask], y[mask], prior, lam)
-            pred = float(X[i] @ theta)
-            errors.append((float(y[i]) - pred) ** 2)
-        return float(np.mean(errors))
+            preds[i] = float(X[i] @ theta)
+        return preds
 
     @staticmethod
-    def _scale_by_std(X_train: np.ndarray, X_other: np.ndarray):
-        std = np.std(X_train, axis=0)
-        std = np.where(std < 1e-8, 1.0, std)
-        return X_train / std, X_other / std, std
+    def _reg_strength(lam: float) -> str:
+        if lam < 0.1:
+            return "слабая"
+        if lam <= 1.0:
+            return "умеренная"
+        return "сильная"
 
     def execute(self, input_dto):
-
-        logger.info(
-            "ridge_application_service_started",
-            extra={"n_properties": len(input_dto.properties), "auto_lambda": input_dto.auto_lambda},
-        )
+        logger.info("ridge_application_service_started", extra={"n_properties": len(input_dto.properties)})
 
         try:
-            X = np.array([[p.house_area, p.land_area] for p in input_dto.properties], dtype=float)
+            X_raw = np.array([[p.house_area, p.land_area] for p in input_dto.properties], dtype=float)
             y = np.array([p.price for p in input_dto.properties], dtype=float)
 
-            X_train, y_train, X_test, y_test = self._train_test_split(X, y, test_ratio=0.2)
+            X, std = self._scale_by_std(X_raw)
 
-            X_train_s, X_test_s, std = self._scale_by_std(X_train, X_test)
-
-            beta0 = 0.0 if input_dto.beta_prior is None else float(input_dto.beta_prior)
-            alpha0 = 0.0 if input_dto.alpha_prior is None else float(input_dto.alpha_prior)
-            prior_raw = np.array([beta0, alpha0], dtype=float)
-            prior_s = prior_raw * std
+            beta0 = float(input_dto.beta_prior or 0.0)
+            alpha0 = float(input_dto.alpha_prior or 0.0)
+            prior_scaled = np.array([beta0, alpha0], dtype=float) * std
 
             if input_dto.auto_lambda:
                 grid = self._DEFAULT_GRID
             else:
-                manual_lambda = float((input_dto.lambda_beta + input_dto.lambda_alpha) / 2.0)
-                grid = [manual_lambda]
+                grid = [float((input_dto.lambda_beta + input_dto.lambda_alpha) / 2.0)]
 
-            cv_points = []
+            cv_curve: list[CvPointDTO] = []
             best_lambda = grid[0]
-            best_error = float("inf")
+            best_loocv_mse = float("inf")
+            best_preds = None
 
             for lam in grid:
-                cv_err = self._loocv_error(X_train_s, y_train, prior_s, lam)
-                cv_points.append(CvPointDTO(lambda_value=float(lam), loocv_mse=float(cv_err)))
-                if cv_err < best_error:
-                    best_error = cv_err
+                preds = self._loocv_predictions(X, y, prior_scaled, lam)
+                mse = float(np.mean((y - preds) ** 2))
+                cv_curve.append(CvPointDTO(lambda_value=float(lam), loocv_mse=mse))
+                if mse < best_loocv_mse:
+                    best_loocv_mse = mse
                     best_lambda = float(lam)
+                    best_preds = preds
 
-            theta_s = self._fit_theta(X_train_s, y_train, prior_s, best_lambda)
-            beta = float(theta_s[0] / std[0])
-            alpha = float(theta_s[1] / std[1])
+            assert best_preds is not None
 
-            y_pred = X_test @ np.array([beta, alpha], dtype=float)
-            residuals = y_test - y_pred
+            final_theta = self._fit_theta(X, y, prior_scaled, best_lambda)
+            beta = float(final_theta[0] / std[0])
+            alpha = float(final_theta[1] / std[1])
 
+            residuals = y - best_preds
             mse = float(np.mean(residuals ** 2))
             rmse = float(np.sqrt(mse))
             mae = float(np.mean(np.abs(residuals)))
+            safe = np.where(np.abs(y) < 1e-8, 1e-8, y)
+            mape = float(np.mean(np.abs(residuals / safe)) * 100)
+            ss_tot = float(np.sum((y - np.mean(y)) ** 2))
+            r2 = 0.0 if ss_tot == 0 else float(1 - np.sum(residuals ** 2) / ss_tot)
 
-            # simple CI approximation via train residual variance
-            train_pred = X_train @ np.array([beta, alpha], dtype=float)
-            train_resid = y_train - train_pred
-            dof = max(len(y_train) - 2, 1)
-            sigma2 = float(np.sum(train_resid ** 2) / dof)
-            cov = sigma2 * np.linalg.inv(X_train.T @ X_train + best_lambda * np.eye(2))
-            se_beta, se_alpha = np.sqrt(np.clip(np.diag(cov), 0.0, None))
+            dof = max(len(y) - 2, 1)
+            sigma2 = float(np.sum((y - (X_raw @ np.array([beta, alpha]))) ** 2) / dof)
+            cov = sigma2 * np.linalg.inv(X_raw.T @ X_raw + best_lambda * np.eye(2))
+            se = np.sqrt(np.clip(np.diag(cov), 0.0, None))
+            beta_ci = ConfidenceIntervalDTO(lower=float(beta - 1.96 * se[0]), upper=float(beta + 1.96 * se[0]))
+            alpha_ci = ConfidenceIntervalDTO(lower=float(alpha - 1.96 * se[1]), upper=float(alpha + 1.96 * se[1]))
 
-            beta_ci = ConfidenceIntervalDTO(lower=float(beta - 1.96 * se_beta), upper=float(beta + 1.96 * se_beta))
-            alpha_ci = ConfidenceIntervalDTO(lower=float(alpha - 1.96 * se_alpha), upper=float(alpha + 1.96 * se_alpha))
+            beta_shift = 0.0 if abs(beta0) < 1e-8 else float((beta - beta0) / beta0 * 100)
+            alpha_shift = 0.0 if abs(alpha0) < 1e-8 else float((alpha - alpha0) / alpha0 * 100)
 
-            quality_label = "слабое" if mse > 0 and rmse > np.mean(y_test) * 0.3 else "хорошее"
+            reliability_msg = (
+                "Модель демонстрирует стабильную точность, однако разброс данных указывает на умеренную неопределённость оценок."
+                if rmse < np.mean(y) * 0.25
+                else "Точность модели ограничена высоким разбросом данных; неопределённость оценок повышена."
+            )
 
             result = CalculateRidgeResultDTO(
                 parameters=RidgeParametersDTO(beta=beta, alpha=alpha),
-                metrics=RegressionMetricsDTO(mse=mse, rmse=rmse, mae=mae),
-                uncertainty=UncertaintyDTO(beta_ci_95=beta_ci, alpha_ci_95=alpha_ci),
+                metrics=RegressionMetricsDTO(r2_loocv=r2, rmse_loocv=rmse, mae_loocv=mae, mape_loocv=mape),
+                uncertainty=UncertaintyDTO(
+                    beta_ci_95=beta_ci,
+                    alpha_ci_95=alpha_ci,
+                    beta_shift_pct=beta_shift,
+                    alpha_shift_pct=alpha_shift,
+                    regularization_strength=self._reg_strength(best_lambda),
+                ),
                 lambda_star=best_lambda,
-                split=SplitInfoDTO(train_size=int(len(y_train)), test_size=int(len(y_test))),
-                cv_curve=cv_points,
+                cv_curve=cv_curve,
+                diagnostics=DiagnosticsDTO(mean_residual=float(np.mean(residuals))),
                 prediction_formula=f"V = {beta:.4f} * S + {alpha:.4f} * Q",
                 n_observations=int(len(y)),
                 interpretation=InterpretationDTO(
                     behavior=(
-                        "Новые данные имеют высокий разброс, модель использует компромисс между историей и текущим рынком."
+                        "Новые данные имеют высокий разброс, поэтому модель частично опирается на предыдущий период."
                         if best_lambda >= 1
-                        else "Новые данные стабильны, модель преимущественно опирается на текущую выборку."
+                        else "Новые данные стабильны, модель в основном опирается на текущие наблюдения."
                     ),
-                    market_change=(
-                        f"Относительно приора: дом {'вырос' if beta >= beta0 else 'снизился'}, участок {'вырос' if alpha >= alpha0 else 'снизился'}."
-                    ),
-                    reliability=(
-                        "Оценки параметров стабильны." if (beta_ci.upper - beta_ci.lower + alpha_ci.upper - alpha_ci.lower) < abs(beta + alpha) * 0.5
-                        else "Оценки имеют повышенную неопределённость из-за малого объёма данных."
-                    ),
+                    regularization_impact="Модель частично опирается на оценки предыдущего периода, что повышает устойчивость при малом объёме данных.",
+                    market_change=f"Изменение к прошлому периоду: дом {beta_shift:+.1f}%, участок {alpha_shift:+.1f}%.",
+                    forecast_reliability=reliability_msg,
+                    limitations="Модель учитывает только площадь дома и участка и не учитывает локацию, состояние и иные факторы.",
                 ),
             )
 
-            logger.info("ridge_application_service_completed", extra={"lambda_star": best_lambda, "mse_test": mse})
+            logger.info("ridge_application_service_completed", extra={"lambda_star": best_lambda, "rmse_loocv": rmse})
             return result
 
         except DomainError:

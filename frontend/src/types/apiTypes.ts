@@ -19,10 +19,10 @@ export interface RegressionParameters {
 }
 
 export interface RegressionMetrics {
-  rss: number;
-  mse: number;
-  rmse: number;
-  mae: number;
+  r2_loocv: number;
+  rmse_loocv: number;
+  mae_loocv: number;
+  mape_loocv: number;
 }
 
 export interface ConfidenceInterval {
@@ -33,29 +33,17 @@ export interface ConfidenceInterval {
 export interface Uncertainty {
   beta_ci_95: ConfidenceInterval;
   alpha_ci_95: ConfidenceInterval;
-}
-
-export interface ConfidenceInterval {
-  lower: number;
-  upper: number;
-}
-
-export interface Uncertainty {
-  beta_standard_error: number;
-  alpha_standard_error: number;
-  beta_ci_95: ConfidenceInterval;
-  alpha_ci_95: ConfidenceInterval;
+  beta_shift_pct: number;
+  alpha_shift_pct: number;
+  regularization_strength: string;
 }
 
 export interface Interpretation {
   behavior: string;
+  regularization_impact: string;
   market_change: string;
-  reliability: string;
-}
-
-export interface SplitInfo {
-  train_size: number;
-  test_size: number;
+  forecast_reliability: string;
+  limitations: string;
 }
 
 export interface CvPoint {
@@ -63,13 +51,17 @@ export interface CvPoint {
   loocv_mse: number;
 }
 
+export interface Diagnostics {
+  mean_residual: number;
+}
+
 export interface CalculateResponse {
   parameters: RegressionParameters;
   metrics: RegressionMetrics;
   uncertainty: Uncertainty;
   lambda_star: number;
-  split: SplitInfo;
   cv_curve: CvPoint[];
+  diagnostics: Diagnostics;
   prediction_formula: string;
   n_observations: number;
   interpretation: Interpretation;

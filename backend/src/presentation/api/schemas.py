@@ -27,15 +27,15 @@ class CalculateRequest(BaseModel):
     @model_validator(mode="after")
     def validate_properties(self):
         if len(self.properties) < 5:
-            raise ValueError("At least five properties are required for train/test split and LOOCV")
+            raise ValueError("At least five properties are required")
         return self
 
 
 class RegressionMetricsResponse(BaseModel):
-    rss: float
-    mse: float
-    rmse: float
-    mae: float
+    r2_loocv: float
+    rmse_loocv: float
+    mae_loocv: float
+    mape_loocv: float
 
 
 class ParametersResponse(BaseModel):
@@ -51,12 +51,17 @@ class ConfidenceIntervalResponse(BaseModel):
 class UncertaintyResponse(BaseModel):
     beta_ci_95: ConfidenceIntervalResponse
     alpha_ci_95: ConfidenceIntervalResponse
+    beta_shift_pct: float
+    alpha_shift_pct: float
+    regularization_strength: str
 
 
 class InterpretationResponse(BaseModel):
     behavior: str
+    regularization_impact: str
     market_change: str
-    reliability: str
+    forecast_reliability: str
+    limitations: str
 
 
 class CvPointResponse(BaseModel):
@@ -64,9 +69,8 @@ class CvPointResponse(BaseModel):
     loocv_mse: float
 
 
-class SplitInfoResponse(BaseModel):
-    train_size: int
-    test_size: int
+class DiagnosticsResponse(BaseModel):
+    mean_residual: float
 
 
 class CalculateResponse(BaseModel):
@@ -74,8 +78,8 @@ class CalculateResponse(BaseModel):
     metrics: RegressionMetricsResponse
     uncertainty: UncertaintyResponse
     lambda_star: float
-    split: SplitInfoResponse
     cv_curve: List[CvPointResponse]
+    diagnostics: DiagnosticsResponse
     prediction_formula: str
     n_observations: int
     interpretation: InterpretationResponse

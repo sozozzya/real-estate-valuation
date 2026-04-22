@@ -3,10 +3,10 @@ from src.presentation.api.schemas import (
     CalculateResponse,
     ConfidenceIntervalResponse,
     CvPointResponse,
+    DiagnosticsResponse,
     InterpretationResponse,
     ParametersResponse,
     RegressionMetricsResponse,
-    SplitInfoResponse,
     UncertaintyResponse,
 )
 from src.application.dto.calculate_input import (
@@ -42,15 +42,12 @@ class ResponseMapper:
     @staticmethod
     def from_dto(dto) -> CalculateResponse:
         return CalculateResponse(
-            parameters=ParametersResponse(
-                beta=dto.parameters.beta,
-                alpha=dto.parameters.alpha,
-            ),
+            parameters=ParametersResponse(beta=dto.parameters.beta, alpha=dto.parameters.alpha),
             metrics=RegressionMetricsResponse(
-                rss=dto.metrics.rss,
-                mse=dto.metrics.mse,
-                rmse=dto.metrics.rmse,
-                mae=dto.metrics.mae,
+                r2_loocv=dto.metrics.r2_loocv,
+                rmse_loocv=dto.metrics.rmse_loocv,
+                mae_loocv=dto.metrics.mae_loocv,
+                mape_loocv=dto.metrics.mape_loocv,
             ),
             uncertainty=UncertaintyResponse(
                 beta_ci_95=ConfidenceIntervalResponse(
@@ -61,21 +58,20 @@ class ResponseMapper:
                     lower=dto.uncertainty.alpha_ci_95.lower,
                     upper=dto.uncertainty.alpha_ci_95.upper,
                 ),
+                beta_shift_pct=dto.uncertainty.beta_shift_pct,
+                alpha_shift_pct=dto.uncertainty.alpha_shift_pct,
+                regularization_strength=dto.uncertainty.regularization_strength,
             ),
             lambda_star=dto.lambda_star,
-            split=SplitInfoResponse(
-                train_size=dto.split.train_size,
-                test_size=dto.split.test_size,
-            ),
-            cv_curve=[
-                CvPointResponse(lambda_value=p.lambda_value, loocv_mse=p.loocv_mse)
-                for p in dto.cv_curve
-            ],
+            cv_curve=[CvPointResponse(lambda_value=p.lambda_value, loocv_mse=p.loocv_mse) for p in dto.cv_curve],
+            diagnostics=DiagnosticsResponse(mean_residual=dto.diagnostics.mean_residual),
             prediction_formula=dto.prediction_formula,
             n_observations=dto.n_observations,
             interpretation=InterpretationResponse(
                 behavior=dto.interpretation.behavior,
+                regularization_impact=dto.interpretation.regularization_impact,
                 market_change=dto.interpretation.market_change,
-                reliability=dto.interpretation.reliability,
+                forecast_reliability=dto.interpretation.forecast_reliability,
+                limitations=dto.interpretation.limitations,
             ),
         )

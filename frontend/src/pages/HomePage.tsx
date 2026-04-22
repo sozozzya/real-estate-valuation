@@ -100,7 +100,7 @@ export default function HomePage() {
           <ResultsPanel result={result} />
           <ReliabilityPanel result={result} />
           <QualityPanel result={result} />
-          <AnalysisPanel properties={calculatedProperties} parameters={result.parameters} />
+          <AnalysisPanel properties={calculatedProperties} result={result} />
           <InterpretationPanel result={result} showCalculatedLambdas={usedAutoLambda} />
         </>
       )}
