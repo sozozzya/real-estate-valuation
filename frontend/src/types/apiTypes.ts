@@ -19,6 +19,7 @@ export interface RegressionParameters {
 }
 
 export interface RegressionMetrics {
+  rss: number;
   mse: number;
   rmse: number;
   mae: number;
@@ -30,6 +31,18 @@ export interface ConfidenceInterval {
 }
 
 export interface Uncertainty {
+  beta_ci_95: ConfidenceInterval;
+  alpha_ci_95: ConfidenceInterval;
+}
+
+export interface ConfidenceInterval {
+  lower: number;
+  upper: number;
+}
+
+export interface Uncertainty {
+  beta_standard_error: number;
+  alpha_standard_error: number;
   beta_ci_95: ConfidenceInterval;
   alpha_ci_95: ConfidenceInterval;
 }

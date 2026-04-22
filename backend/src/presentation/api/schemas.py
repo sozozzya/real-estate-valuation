@@ -32,6 +32,7 @@ class CalculateRequest(BaseModel):
 
 
 class RegressionMetricsResponse(BaseModel):
+    rss: float
     mse: float
     rmse: float
     mae: float

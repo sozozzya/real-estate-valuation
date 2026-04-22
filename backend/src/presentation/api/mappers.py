@@ -47,6 +47,7 @@ class ResponseMapper:
                 alpha=dto.parameters.alpha,
             ),
             metrics=RegressionMetricsResponse(
+                rss=dto.metrics.rss,
                 mse=dto.metrics.mse,
                 rmse=dto.metrics.rmse,
                 mae=dto.metrics.mae,
