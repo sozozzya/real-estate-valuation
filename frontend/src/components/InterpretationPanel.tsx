@@ -1,36 +1,24 @@
-// src/components/InterpretationPanel.tsx
-
 import type { CalculateResponse } from "../types/apiTypes";
 
 interface Props {
   result: CalculateResponse;
+  showCalculatedLambdas: boolean;
 }
 
-export default function InterpretationPanel({ result }: Props) {
-  const { parameters, gamma_used, interpretation } = result;
+export default function InterpretationPanel({ result, showCalculatedLambdas }: Props) {
+  const { interpretation, lambda_star } = result;
 
   return (
-    <div className="bg-white p-4 rounded shadow mt-6">
-      <h3 className="font-semibold mb-2">Интерпретация</h3>
-
-      <p>
-        Удельная стоимость дома: <b>{parameters.beta.toFixed(2)}</b>
-      </p>
-
-      <p>
-        Удельная стоимость участка: <b>{parameters.alpha.toFixed(2)}</b>
-      </p>
-
-      <p>
-        Использованный коэффициент регуляризации γ ={" "}
-        <b>{gamma_used.toFixed(2)}</b>
-      </p>
-
-      <p className="mt-2">
-        <b>{interpretation.summary}</b>
-      </p>
-
-      <p>Качество модели: {interpretation.quality}</p>
+    <div className="result-card">
+      <h2 className="result-title">🧠 Интерпретация</h2>
+      <p>{interpretation.behavior}</p>
+      <p>{interpretation.market_change}</p>
+      <p>{interpretation.reliability}</p>
+      {showCalculatedLambdas && (
+        <p>
+          Подобранный параметр регуляризации: <b>λ* = {lambda_star.toFixed(4)}</b>
+        </p>
+      )}
     </div>
   );
 }
