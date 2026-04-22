@@ -24,7 +24,7 @@ async def calculate(
         "calculate_request_received",
         extra={
             "n_properties": len(request.properties),
-            "auto_gamma": request.auto_gamma,
+            "auto_lambda": request.auto_lambda,
         },
     )
 
@@ -42,9 +42,9 @@ async def calculate(
         logger.info(
             "calculate_request_completed",
             extra={
-                "gamma_used": response.gamma_used,
+                "lambda_star": response.lambda_star,
                 "n_observations": response.n_observations,
-                "r2": response.metrics.r2,
+                "rmse_loocv": response.metrics.rmse_loocv,
             },
         )
 

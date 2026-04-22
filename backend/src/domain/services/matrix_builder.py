@@ -7,16 +7,16 @@ from src.domain.models.regression_data import RegressionData
 
 class MatrixBuilder:
     """
-    Builds design matrix:
+    Builds design matrix for model:
 
-    V = βS + αQ + c
+    V = βS + αQ + ε
     """
 
     def build(self, data: RegressionData):
 
         X = np.array(
             [
-                [p.house_area, p.land_area, 1.0]
+                [p.house_area, p.land_area]
                 for p in data.properties
             ],
             dtype=float,

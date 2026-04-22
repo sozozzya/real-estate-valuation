@@ -7,6 +7,9 @@ import ManualTableInput from "../components/ManualTableInput";
 import PriorInput from "../components/PriorInput";
 import GammaSelector from "../components/GammaSelector";
 import ResultsPanel from "../components/ResultsPanel";
+import ReliabilityPanel from "../components/ReliabilityPanel";
+import QualityPanel from "../components/QualityPanel";
+import AnalysisPanel from "../components/AnalysisPanel";
 import InterpretationPanel from "../components/InterpretationPanel";
 import { useRidgeCalculation } from "../hooks/useRidgeCalculation";
 import type { Property, CalculateResponse } from "../types/apiTypes";
@@ -16,9 +19,11 @@ export default function HomePage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [betaPrior, setBetaPrior] = useState<number | undefined>();
   const [alphaPrior, setAlphaPrior] = useState<number | undefined>();
-  const [autoGamma, setAutoGamma] = useState(true);
-  const [gamma, setGamma] = useState<number | undefined>();
+  const [autoLambda, setAutoLambda] = useState(true);
+  const [lambdaValue, setLambdaValue] = useState<number | undefined>();
   const [result, setResult] = useState<CalculateResponse | null>(null);
+  const [calculatedProperties, setCalculatedProperties] = useState<Property[]>([]);
+  const [usedAutoLambda, setUsedAutoLambda] = useState(true);
 
   const { execute, loading, error } = useRidgeCalculation();
 
@@ -39,11 +44,15 @@ export default function HomePage() {
       properties: cleaned,
       beta_prior: betaPrior ?? 0,
       alpha_prior: alphaPrior ?? 0,
-      gamma: autoGamma ? 0 : (gamma ?? 0),
-      auto_gamma: autoGamma,
+      lambda_value: autoLambda ? undefined : lambdaValue,
+      auto_lambda: autoLambda,
     });
 
-    if (res) setResult(res);
+    if (res) {
+      setResult(res);
+      setCalculatedProperties(cleaned);
+      setUsedAutoLambda(autoLambda);
+    }
   };
 
   return (
@@ -68,11 +77,11 @@ export default function HomePage() {
       />
 
       <GammaSelector
-        auto={autoGamma}
-        gamma={gamma}
-        onChange={(a, g) => {
-          setAutoGamma(a);
-          setGamma(g);
+        auto={autoLambda}
+        lambdaValue={lambdaValue}
+        onChange={(a, lv) => {
+          setAutoLambda(a);
+          setLambdaValue(lv);
         }}
       />
 
@@ -85,7 +94,10 @@ export default function HomePage() {
       {result && (
         <>
           <ResultsPanel result={result} />
-          <InterpretationPanel result={result} />
+          <ReliabilityPanel result={result} />
+          <QualityPanel result={result} />
+          <AnalysisPanel properties={calculatedProperties} result={result} />
+          <InterpretationPanel result={result} showCalculatedLambdas={usedAutoLambda} />
         </>
       )}
     </div>
