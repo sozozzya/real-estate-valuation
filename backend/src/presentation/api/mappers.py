@@ -1,13 +1,12 @@
-# src/presentation/api/mappers.py
-
-
 from src.presentation.api.schemas import (
     CalculateRequest,
     CalculateResponse,
     ConfidenceIntervalResponse,
+    CvPointResponse,
     InterpretationResponse,
     ParametersResponse,
     RegressionMetricsResponse,
+    SplitInfoResponse,
     UncertaintyResponse,
 )
 from src.application.dto.calculate_input import (
@@ -52,12 +51,8 @@ class ResponseMapper:
                 mse=dto.metrics.mse,
                 rmse=dto.metrics.rmse,
                 mae=dto.metrics.mae,
-                mape=dto.metrics.mape,
-                r2=dto.metrics.r2,
             ),
             uncertainty=UncertaintyResponse(
-                beta_standard_error=dto.uncertainty.beta_standard_error,
-                alpha_standard_error=dto.uncertainty.alpha_standard_error,
                 beta_ci_95=ConfidenceIntervalResponse(
                     lower=dto.uncertainty.beta_ci_95.lower,
                     upper=dto.uncertainty.beta_ci_95.upper,
@@ -67,13 +62,20 @@ class ResponseMapper:
                     upper=dto.uncertainty.alpha_ci_95.upper,
                 ),
             ),
-            lambda_beta_used=dto.lambda_beta_used,
-            lambda_alpha_used=dto.lambda_alpha_used,
+            lambda_star=dto.lambda_star,
+            split=SplitInfoResponse(
+                train_size=dto.split.train_size,
+                test_size=dto.split.test_size,
+            ),
+            cv_curve=[
+                CvPointResponse(lambda_value=p.lambda_value, loocv_mse=p.loocv_mse)
+                for p in dto.cv_curve
+            ],
             prediction_formula=dto.prediction_formula,
             n_observations=dto.n_observations,
             interpretation=InterpretationResponse(
                 behavior=dto.interpretation.behavior,
                 market_change=dto.interpretation.market_change,
-                quality=dto.interpretation.quality,
+                reliability=dto.interpretation.reliability,
             ),
         )

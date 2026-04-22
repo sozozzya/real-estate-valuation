@@ -42,10 +42,9 @@ async def calculate(
         logger.info(
             "calculate_request_completed",
             extra={
-                "lambda_beta_used": response.lambda_beta_used,
-                "lambda_alpha_used": response.lambda_alpha_used,
+                "lambda_star": response.lambda_star,
                 "n_observations": response.n_observations,
-                "r2": response.metrics.r2,
+                "test_mse": response.metrics.mse,
             },
         )
 

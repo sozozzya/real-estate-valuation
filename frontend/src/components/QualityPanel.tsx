@@ -5,20 +5,24 @@ interface Props {
 }
 
 const intFmt = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
-const pctFmt = new Intl.NumberFormat("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 export default function QualityPanel({ result }: Props) {
-  const { metrics, interpretation } = result;
+  const { metrics, split } = result;
 
   return (
     <div className="result-card">
-      <h2 className="result-title">📈 Качество модели</h2>
-      <p><b>{interpretation.quality}</b></p>
+      <h2 className="result-title">📈 Качество модели (test)</h2>
       <p>
-        Средняя ошибка: <b>{intFmt.format(Math.round(metrics.rmse))} руб.</b>
+        MSE: <b>{intFmt.format(Math.round(metrics.mse))}</b>
       </p>
       <p>
-        Средняя ошибка (MAPE): <b>{pctFmt.format(metrics.mape)}%</b>
+        RMSE: <b>{intFmt.format(Math.round(metrics.rmse))} руб.</b>
+      </p>
+      <p>
+        MAE: <b>{intFmt.format(Math.round(metrics.mae))} руб.</b>
+      </p>
+      <p>
+        Разделение данных: train={split.train_size}, test={split.test_size}
       </p>
     </div>
   );

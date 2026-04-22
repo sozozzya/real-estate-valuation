@@ -1,5 +1,3 @@
-# src/application/dto/calculate_result.py
-
 from dataclasses import dataclass
 
 
@@ -15,8 +13,18 @@ class RegressionMetricsDTO:
     mse: float
     rmse: float
     mae: float
-    mape: float
-    r2: float
+
+
+@dataclass(frozen=True)
+class ConfidenceIntervalDTO:
+    lower: float
+    upper: float
+
+
+@dataclass(frozen=True)
+class UncertaintyDTO:
+    beta_ci_95: ConfidenceIntervalDTO
+    alpha_ci_95: ConfidenceIntervalDTO
 
 
 @dataclass(frozen=True)
@@ -37,7 +45,19 @@ class UncertaintyDTO:
 class InterpretationDTO:
     behavior: str
     market_change: str
-    quality: str
+    reliability: str
+
+
+@dataclass(frozen=True)
+class CvPointDTO:
+    lambda_value: float
+    loocv_mse: float
+
+
+@dataclass(frozen=True)
+class SplitInfoDTO:
+    train_size: int
+    test_size: int
 
 
 @dataclass(frozen=True)
@@ -45,8 +65,9 @@ class CalculateRidgeResultDTO:
     parameters: RidgeParametersDTO
     metrics: RegressionMetricsDTO
     uncertainty: UncertaintyDTO
-    lambda_beta_used: float
-    lambda_alpha_used: float
+    lambda_star: float
+    split: SplitInfoDTO
+    cv_curve: list[CvPointDTO]
     prediction_formula: str
     n_observations: int
     interpretation: InterpretationDTO

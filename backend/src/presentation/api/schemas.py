@@ -1,5 +1,3 @@
-# src/presentation/api/schemas.py
-
 from pydantic import BaseModel, Field, model_validator
 from typing import List, Optional
 
@@ -28,8 +26,8 @@ class CalculateRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_properties(self):
-        if len(self.properties) < 3:
-            raise ValueError("At least three properties are required")
+        if len(self.properties) < 5:
+            raise ValueError("At least five properties are required for train/test split and LOOCV")
         return self
 
 
@@ -38,8 +36,6 @@ class RegressionMetricsResponse(BaseModel):
     mse: float
     rmse: float
     mae: float
-    mape: float
-    r2: float
 
 
 class ParametersResponse(BaseModel):
@@ -53,8 +49,6 @@ class ConfidenceIntervalResponse(BaseModel):
 
 
 class UncertaintyResponse(BaseModel):
-    beta_standard_error: float
-    alpha_standard_error: float
     beta_ci_95: ConfidenceIntervalResponse
     alpha_ci_95: ConfidenceIntervalResponse
 
@@ -62,15 +56,26 @@ class UncertaintyResponse(BaseModel):
 class InterpretationResponse(BaseModel):
     behavior: str
     market_change: str
-    quality: str
+    reliability: str
+
+
+class CvPointResponse(BaseModel):
+    lambda_value: float
+    loocv_mse: float
+
+
+class SplitInfoResponse(BaseModel):
+    train_size: int
+    test_size: int
 
 
 class CalculateResponse(BaseModel):
     parameters: ParametersResponse
     metrics: RegressionMetricsResponse
     uncertainty: UncertaintyResponse
-    lambda_beta_used: float
-    lambda_alpha_used: float
+    lambda_star: float
+    split: SplitInfoResponse
+    cv_curve: List[CvPointResponse]
     prediction_formula: str
     n_observations: int
     interpretation: InterpretationResponse

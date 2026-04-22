@@ -1,5 +1,3 @@
-//src/types/apiTypes.ts
-
 export interface Property {
   price: number;
   house_area: number;
@@ -25,8 +23,16 @@ export interface RegressionMetrics {
   mse: number;
   rmse: number;
   mae: number;
-  mape: number;
-  r2: number;
+}
+
+export interface ConfidenceInterval {
+  lower: number;
+  upper: number;
+}
+
+export interface Uncertainty {
+  beta_ci_95: ConfidenceInterval;
+  alpha_ci_95: ConfidenceInterval;
 }
 
 export interface ConfidenceInterval {
@@ -44,15 +50,26 @@ export interface Uncertainty {
 export interface Interpretation {
   behavior: string;
   market_change: string;
-  quality: string;
+  reliability: string;
+}
+
+export interface SplitInfo {
+  train_size: number;
+  test_size: number;
+}
+
+export interface CvPoint {
+  lambda_value: number;
+  loocv_mse: number;
 }
 
 export interface CalculateResponse {
   parameters: RegressionParameters;
   metrics: RegressionMetrics;
   uncertainty: Uncertainty;
-  lambda_beta_used: number;
-  lambda_alpha_used: number;
+  lambda_star: number;
+  split: SplitInfo;
+  cv_curve: CvPoint[];
   prediction_formula: string;
   n_observations: number;
   interpretation: Interpretation;

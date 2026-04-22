@@ -23,9 +23,7 @@ export default function HomePage() {
   const [lambdaBeta, setLambdaBeta] = useState<number | undefined>();
   const [lambdaAlpha, setLambdaAlpha] = useState<number | undefined>();
   const [result, setResult] = useState<CalculateResponse | null>(null);
-  const [calculatedProperties, setCalculatedProperties] = useState<Property[]>(
-    [],
-  );
+  const [calculatedProperties, setCalculatedProperties] = useState<Property[]>([]);
   const [usedAutoLambda, setUsedAutoLambda] = useState(true);
 
   const { execute, loading, error } = useRidgeCalculation();
@@ -102,14 +100,8 @@ export default function HomePage() {
           <ResultsPanel result={result} />
           <ReliabilityPanel result={result} />
           <QualityPanel result={result} />
-          <AnalysisPanel
-            properties={calculatedProperties}
-            parameters={result.parameters}
-          />
-          <InterpretationPanel
-            result={result}
-            showCalculatedLambdas={usedAutoLambda}
-          />
+          <AnalysisPanel properties={calculatedProperties} parameters={result.parameters} />
+          <InterpretationPanel result={result} showCalculatedLambdas={usedAutoLambda} />
         </>
       )}
     </div>
