@@ -12,13 +12,17 @@ from typing import Optional
 class GammaStrategyFactory:
 
     @staticmethod
-    def create(auto_gamma: bool, gamma: Optional[float]):
+    def create(
+        auto_lambda: bool,
+        lambda_value: Optional[float],
+    ):
 
-        if auto_gamma:
+        if auto_lambda:
             return VarianceBasedGammaStrategy(scale=0.01)
 
-        if gamma is None:
+        if lambda_value is None:
             raise ValidationError(
-                "gamma must be provided when auto_gamma is False")
+                "lambda_value must be provided when auto_lambda is False"
+            )
 
-        return FixedGammaStrategy(gamma)
+        return FixedGammaStrategy(lambda_beta=lambda_value, lambda_alpha=lambda_value)
