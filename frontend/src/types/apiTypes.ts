@@ -8,8 +8,7 @@ export interface CalculateRequest {
   properties: Property[];
   beta_prior?: number;
   alpha_prior?: number;
-  lambda_beta?: number;
-  lambda_alpha?: number;
+  lambda_value?: number;
   auto_lambda?: boolean;
 }
 

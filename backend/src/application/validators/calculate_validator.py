@@ -25,7 +25,7 @@ class CalculateValidator:
                 raise ValidationError(f"land_area must be positive at index {i}")
 
         if not dto.auto_lambda:
-            if dto.lambda_beta is None or dto.lambda_alpha is None:
-                raise ValidationError("lambda_beta and lambda_alpha must be provided when auto_lambda is False")
-            if dto.lambda_beta <= 0 or dto.lambda_alpha <= 0:
-                raise ValidationError("manual lambda values must be positive")
+            if dto.lambda_value is None:
+                raise ValidationError("lambda_value must be provided when auto_lambda is False")
+            if dto.lambda_value <= 0:
+                raise ValidationError("manual lambda value must be positive")

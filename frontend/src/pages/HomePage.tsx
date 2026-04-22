@@ -20,8 +20,7 @@ export default function HomePage() {
   const [betaPrior, setBetaPrior] = useState<number | undefined>();
   const [alphaPrior, setAlphaPrior] = useState<number | undefined>();
   const [autoLambda, setAutoLambda] = useState(true);
-  const [lambdaBeta, setLambdaBeta] = useState<number | undefined>();
-  const [lambdaAlpha, setLambdaAlpha] = useState<number | undefined>();
+  const [lambdaValue, setLambdaValue] = useState<number | undefined>();
   const [result, setResult] = useState<CalculateResponse | null>(null);
   const [calculatedProperties, setCalculatedProperties] = useState<Property[]>([]);
   const [usedAutoLambda, setUsedAutoLambda] = useState(true);
@@ -45,8 +44,7 @@ export default function HomePage() {
       properties: cleaned,
       beta_prior: betaPrior ?? 0,
       alpha_prior: alphaPrior ?? 0,
-      lambda_beta: autoLambda ? 0 : (lambdaBeta ?? 0),
-      lambda_alpha: autoLambda ? 0 : (lambdaAlpha ?? 0),
+      lambda_value: autoLambda ? undefined : lambdaValue,
       auto_lambda: autoLambda,
     });
 
@@ -80,12 +78,10 @@ export default function HomePage() {
 
       <GammaSelector
         auto={autoLambda}
-        lambdaBeta={lambdaBeta}
-        lambdaAlpha={lambdaAlpha}
-        onChange={(a, lb, la) => {
+        lambdaValue={lambdaValue}
+        onChange={(a, lv) => {
           setAutoLambda(a);
-          setLambdaBeta(lb);
-          setLambdaAlpha(la);
+          setLambdaValue(lv);
         }}
       />
 

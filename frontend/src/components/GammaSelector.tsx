@@ -2,20 +2,18 @@
 
 interface Props {
   auto: boolean;
-  lambdaBeta?: number;
-  lambdaAlpha?: number;
-  onChange: (auto: boolean, lambdaBeta?: number, lambdaAlpha?: number) => void;
+  lambdaValue?: number;
+  onChange: (auto: boolean, lambdaValue?: number) => void;
 }
 
 export default function GammaSelector({
   auto,
-  lambdaBeta,
-  lambdaAlpha,
+  lambdaValue,
   onChange,
 }: Props) {
   return (
     <div className="card-block">
-      <h2 className="section-title">Регуляризация (λβ и λα)</h2>
+      <h2 className="section-title">Регуляризация (λ)</h2>
 
       <label className="checkbox-row">
         <input
@@ -24,48 +22,28 @@ export default function GammaSelector({
           onChange={(e) =>
             onChange(
               e.target.checked,
-              e.target.checked ? undefined : lambdaBeta,
-              e.target.checked ? undefined : lambdaAlpha,
+              e.target.checked ? undefined : lambdaValue,
             )
           }
         />
-        Автоматический подбор λβ и λα
+        Автоматический подбор λ
       </label>
 
       {!auto && (
-        <>
-          <input
-            type="number"
-            step="0.001"
-            value={lambdaBeta ?? ""}
-            placeholder="Введите λβ"
-            className="input"
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              onChange(
-                false,
-                Number.isFinite(value) ? value : undefined,
-                lambdaAlpha,
-              );
-            }}
-          />
-
-          <input
-            type="number"
-            step="0.001"
-            value={lambdaAlpha ?? ""}
-            placeholder="Введите λα"
-            className="input"
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              onChange(
-                false,
-                lambdaBeta,
-                Number.isFinite(value) ? value : undefined,
-              );
-            }}
-          />
-        </>
+        <input
+          type="number"
+          step="0.001"
+          value={lambdaValue ?? ""}
+          placeholder="Введите λ"
+          className="input"
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            onChange(
+              false,
+              Number.isFinite(value) ? value : undefined,
+            );
+          }}
+        />
       )}
     </div>
   );

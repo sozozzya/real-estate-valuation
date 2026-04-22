@@ -32,8 +32,7 @@ class RequestMapper:
             beta_prior=request.beta_prior,
             alpha_prior=request.alpha_prior,
             auto_lambda=request.auto_lambda,
-            lambda_beta=request.lambda_beta,
-            lambda_alpha=request.lambda_alpha,
+            lambda_value=request.lambda_value,
         )
 
 

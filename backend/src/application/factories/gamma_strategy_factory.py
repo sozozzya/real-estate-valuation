@@ -14,16 +14,15 @@ class GammaStrategyFactory:
     @staticmethod
     def create(
         auto_lambda: bool,
-        lambda_beta: Optional[float],
-        lambda_alpha: Optional[float],
+        lambda_value: Optional[float],
     ):
 
         if auto_lambda:
             return VarianceBasedGammaStrategy(scale=0.01)
 
-        if lambda_beta is None or lambda_alpha is None:
+        if lambda_value is None:
             raise ValidationError(
-                "lambda_beta and lambda_alpha must be provided when auto_lambda is False"
+                "lambda_value must be provided when auto_lambda is False"
             )
 
-        return FixedGammaStrategy(lambda_beta=lambda_beta, lambda_alpha=lambda_alpha)
+        return FixedGammaStrategy(lambda_beta=lambda_value, lambda_alpha=lambda_value)

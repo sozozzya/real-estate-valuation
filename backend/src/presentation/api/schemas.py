@@ -15,13 +15,14 @@ class CalculateRequest(BaseModel):
     alpha_prior: Optional[float] = None
 
     auto_lambda: bool = True
-    lambda_beta: Optional[float] = None
-    lambda_alpha: Optional[float] = None
+    lambda_value: Optional[float] = None
 
     @model_validator(mode="after")
     def validate_lambda(self):
-        if not self.auto_lambda and (self.lambda_beta is None or self.lambda_alpha is None):
-            raise ValueError("lambda_beta and lambda_alpha must be provided if auto_lambda is False")
+        if not self.auto_lambda and self.lambda_value is None:
+            raise ValueError("lambda_value must be provided if auto_lambda is False")
+        if self.lambda_value is not None and self.lambda_value <= 0:
+            raise ValueError("lambda_value must be positive")
         return self
 
     @model_validator(mode="after")

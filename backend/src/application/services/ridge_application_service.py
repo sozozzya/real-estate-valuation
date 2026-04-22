@@ -65,7 +65,7 @@ class RidgeApplicationService:
             if input_dto.auto_lambda:
                 grid = self._DEFAULT_GRID
             else:
-                grid = [float((input_dto.lambda_beta + input_dto.lambda_alpha) / 2.0)]
+                grid = [float(input_dto.lambda_value)]
 
             cv_curve: list[CvPointDTO] = []
             best_lambda = grid[0]
