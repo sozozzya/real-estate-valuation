@@ -8,15 +8,16 @@ from src.domain.models.ridge_prior import RidgePrior
 from src.domain.services.gamma_strategy import GammaStrategy
 from src.domain.services.metrics import MetricsCalculator
 from src.domain.services.ridge_solver import RidgeSolver
+from src.domain.services.uncertainty_estimator import UncertaintyEstimator
 
 
 class RidgeEstimator:
     """
     High-level domain service:
     - builds matrices
-    - computes gamma
-    - solves ridge system
-    - calculates metrics
+    - computes lambdas
+    - solves targeted ridge system
+    - calculates metrics and uncertainty
     """
 
     def __init__(
@@ -25,12 +26,14 @@ class RidgeEstimator:
         solver: RidgeSolver | None = None,
         matrix_builder: MatrixBuilder | None = None,
         metrics_calculator: MetricsCalculator | None = None,
+        uncertainty_estimator: UncertaintyEstimator | None = None,
     ):
 
         self._gamma_strategy = gamma_strategy
         self._solver = solver or RidgeSolver()
         self._matrix_builder = matrix_builder or MatrixBuilder()
         self._metrics_calculator = metrics_calculator or MetricsCalculator()
+        self._uncertainty_estimator = uncertainty_estimator or UncertaintyEstimator()
 
     def estimate(
         self,
@@ -40,15 +43,33 @@ class RidgeEstimator:
 
         X, y = self._matrix_builder.build(data)
 
-        gamma = self._gamma_strategy.compute(X, y)
+        lambda_beta, lambda_alpha = self._gamma_strategy.compute(X, y)
 
-        params = self._solver.solve(X, y, prior, gamma)
+        params = self._solver.solve(
+            X,
+            y,
+            prior,
+            lambda_beta=lambda_beta,
+            lambda_alpha=lambda_alpha,
+        )
 
         metrics = self._metrics_calculator.calculate(X, y, params)
+        uncertainty = self._uncertainty_estimator.estimate(
+            X=X,
+            y=y,
+            params=params,
+            lambda_beta=lambda_beta,
+            lambda_alpha=lambda_alpha,
+        )
 
         return RegressionResult(
             parameters=params,
             metrics=metrics,
-            gamma=gamma,
+            uncertainty=uncertainty,
+            lambda_beta=lambda_beta,
+            lambda_alpha=lambda_alpha,
+            beta_prior=prior.beta_prior,
+            alpha_prior=prior.alpha_prior,
+            prediction_formula=f"V = {params.beta:.4f} * S + {params.alpha:.4f} * Q",
             n_observations=data.size,
         )

@@ -1,5 +1,3 @@
-# src/application/dto/calculate_input.py
-
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -15,10 +13,8 @@ class PropertyInputDTO:
 class CalculateRidgeInputDTO:
     properties: List[PropertyInputDTO]
 
-    # prior (optional)
     beta_prior: Optional[float] = None
     alpha_prior: Optional[float] = None
 
-    # gamma logic
-    auto_gamma: bool = True
-    gamma: Optional[float] = None
+    auto_lambda: bool = True
+    lambda_value: Optional[float] = None
